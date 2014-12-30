@@ -36,7 +36,7 @@ Last activity registered %s seconds ago.
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        data = DataPoint.query(ancestor=THERMOMETER).order(-DataPoint.timestamp).fetch(200)
+        data = DataPoint.query(ancestor=THERMOMETER).order(-DataPoint.timestamp).fetch(1)
         for dp in data:
             self.response.out.write('<p>' + str(dp.timestamp) + '&nbsp;' + str(dp.temperature) + '</p>')
 
@@ -106,6 +106,11 @@ class WatchdogTask(webapp2.RequestHandler):
         logging.info(message)
 
     def notify(self, last_update_delta):
+        if last_update_delta.total_seconds() < MAX_DELTA_SECONDS:
+            logging.info("Last update was only %d seconds OK which is OK",
+                         last_update_delta.total_seconds())
+            return
+
         last_notification = Notification.query(ancestor=THERMOMETER).order(-Notification.timestamp).fetch(1)
         if last_notification:
             notification_delta = datetime.now() - last_notification[0].timestamp
@@ -118,16 +123,24 @@ class WatchdogTask(webapp2.RequestHandler):
                   to="Roman Kirillov <sigizmund@gmail.com>",
                   subject="No TemPi activity for too long",
                   body=format(EMAIL_BODY, str(last_update_delta.total_seconds())))
+
         Notification(parent=THERMOMETER).put()
 
     def get(self):
-        self.response.out.content_type = "text/plain"
-        last = DataPoint.query(ancestor=THERMOMETER).order(-DataPoint.timestamp).fetch(1)[0]
-        if not last:
-            pass
-        delta = datetime.now() - last.timestamp
-        self.response.out.write("No events for " + str(delta.total_seconds()) + " seconds\n")
-        self.notify(delta)
+        try:
+            self.response.out.content_type = "text/plain"
+            last = DataPoint.query(ancestor=THERMOMETER).order(-DataPoint.timestamp).fetch(1)[0]
+            if not last:
+                pass
+            delta = datetime.now() - last.timestamp
+            self.response.out.write("No events for " + str(delta.total_seconds()) + " seconds\n")
+            self.notify(delta)
+        except Exception as inst:
+            send_mail(sender="TemPi <sigizmund@gmail.com>",
+                      to="Roman Kirillov <sigizmund@gmail.com>",
+                      subject="TemPi critical error",
+                      body=inst.message)
+
 
 
 app = webapp2.WSGIApplication([
