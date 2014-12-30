@@ -1,5 +1,3 @@
-__author__ = 'kirillov'
-
 from google.appengine.ext import ndb
 
 class DataPoint(ndb.Model):

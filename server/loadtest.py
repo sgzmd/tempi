@@ -1,5 +1,3 @@
-__author__ = 'kirillov'
-
 import urllib2 as u2
 import random
 
