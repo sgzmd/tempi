@@ -15,3 +15,9 @@ indexes:
   properties:
   - name: timestamp
     direction: desc
+
+- kind: Notification
+  ancestor: yes
+  properties:
+  - name: timestamp
+    direction: desc

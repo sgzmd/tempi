@@ -9,3 +9,6 @@ class DataPoint(ndb.Model):
 class HourPoint(ndb.Model):
   timestamp = ndb.DateTimeProperty()
   temperature = ndb.FloatProperty()
+
+class Notification(ndb.Model):
+  timestamp = ndb.DateTimeProperty(auto_now_add=True)

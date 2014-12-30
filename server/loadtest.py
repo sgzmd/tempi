@@ -6,8 +6,8 @@ import random
 from Queue import Queue
 from threading import Thread
 
-#BASE_URL = "localhost:8080"
-BASE_URL = "tin-bronze2.appspot.com"
+BASE_URL = "localhost:8080"
+#BASE_URL = "tin-bronze2.appspot.com"
 
 class Worker(Thread):
     """Thread executing tasks from a given tasks queue"""
