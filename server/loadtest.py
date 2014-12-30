@@ -40,7 +40,7 @@ class ThreadPool:
 
 
 def main():
-  pool = ThreadPool(20)
+  pool = ThreadPool(10)
   def task():
     url = "http://" + BASE_URL + "/submit?temp=" + str(random.random() * 3 + 16)
     print url
