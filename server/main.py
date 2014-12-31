@@ -15,7 +15,7 @@ import pprint
 THERMOMETER = ndb.Key("Thermometer", "1")
 MAX_DELTA_SECONDS = 10 * 60 # 10 minutes
 EMAIL_BODY = """
-Last activity registered %s seconds ago.
+Last activity registered {0} seconds ago.
 """
 
 class MainHandler(webapp2.RequestHandler):
