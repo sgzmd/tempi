@@ -13,7 +13,7 @@ dir="/home/pi/tempi/tempi/client"
 user="root"
 cmd="python /home/pi/tempi/tempi/client/tempi.py -f/var/log/tempi-log"
 
-name=`tempi`
+name='tempi'
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"
 stderr_log="/var/log/$name.err"
