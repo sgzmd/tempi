@@ -10,7 +10,7 @@ from optparse import OptionParser
 
 import dht11
 
-PID = "/tmp/tempi.pid"
+PID = "/var/run/tempi.pid"
 BASE_HOST = "tin-bronze2.appspot.com"
 
 _LOGGER = None
