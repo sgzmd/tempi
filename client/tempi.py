@@ -32,6 +32,9 @@ def get_current_temperature():
     :return: current temperature from the sensor.
     """
     humidity, temperature = dht11.read_sensor_data()
+
+    _LOGGER.info("Humidity: %f, Temperature: %f", humidity, temperature)
+
     return temperature
 
 def report_temperature(temperature, base_host):
