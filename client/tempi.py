@@ -8,6 +8,8 @@ import logging
 from daemonize import Daemonize
 from optparse import OptionParser
 
+import dht11
+
 PID = "/tmp/tempi.pid"
 BASE_HOST = "tin-bronze2.appspot.com"
 
@@ -29,7 +31,8 @@ def get_current_temperature():
     :rtype : float
     :return: current temperature from the sensor.
     """
-    return 17 + 5 * random.random()
+    humidity, temperature = dht11.read_sensor_data()
+    return temperature
 
 def report_temperature(temperature, base_host):
     url = "http://" + base_host + "/submit?temp=" + str(temperature)
