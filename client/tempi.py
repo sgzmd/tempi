@@ -50,9 +50,11 @@ def configure_logger(options):
     my_logger = logging.getLogger('tempi')
     my_logger.setLevel(logging.DEBUG)
 
+
     handler = logging.handlers.RotatingFileHandler(options.log_file,
                                                    maxBytes=20 * 1024 * 1024,
                                                    backupCount=5)
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 
     my_logger.addHandler(handler)
     _LOGGER = my_logger
