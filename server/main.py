@@ -35,7 +35,6 @@ class SubmitDataHandler(webapp2.RequestHandler):
             dp.temperature = float(temperature)
             dp.put()
 
-
 class AggregateTask(webapp2.RequestHandler):
     def get(self):
         def chop_off_minutes(timestamp):
@@ -124,8 +123,6 @@ class WatchdogTask(webapp2.RequestHandler):
                       to="Roman Kirillov <sigizmund@gmail.com>",
                       subject="TemPi critical error",
                       body=inst.message)
-
-
 
 app = webapp2.WSGIApplication([
                                   ('/', MainHandler),
