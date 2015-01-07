@@ -98,7 +98,7 @@ class WatchdogTask(webapp2.RequestHandler):
         last_notification = Notification.query(ancestor=THERMOMETER).order(-Notification.timestamp).fetch(1)
         if last_notification:
             notification_delta = datetime.now() - last_notification[0].timestamp
-            if notification_delta.total_seconds() < MAX_DELTA_SECONDS:
+            if notification_delta.total_seconds() < 10*MAX_DELTA_SECONDS:
                 logging.info("Last notification sent %d seconds ago, not resending",
                              notification_delta.total_seconds())
                 return
