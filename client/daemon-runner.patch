@@ -1,0 +1,17 @@
+Index: env/lib/python3.5/site-packages/daemon/runner.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- env/lib/python3.5/site-packages/daemon/runner.py	(revision )
++++ env/lib/python3.5/site-packages/daemon/runner.py	(revision )
+@@ -116,8 +116,7 @@
+         self.daemon_context = DaemonContext()
+         self.daemon_context.stdin = open(app.stdin_path, 'rt')
+         self.daemon_context.stdout = open(app.stdout_path, 'w+t')
+-        self.daemon_context.stderr = open(
+-                app.stderr_path, 'w+t', buffering=0)
++        self.daemon_context.stderr = open(app.stderr_path, 'w+t')
+ 
+         self.pidfile = None
+         if app.pidfile_path is not None:

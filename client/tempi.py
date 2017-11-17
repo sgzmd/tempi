@@ -1,86 +1,33 @@
-__author__ = 'kirillov'
-
-import random
-import time
-import urllib2 as u2
-import logging
-
-from daemonize import Daemonize
-from optparse import OptionParser
-
+from daemon import runner
+import requests
 import dht11
+import logging
+import time
 
-PID = "/var/run/tempi.pid"
-BASE_HOST = "tin-bronze2.appspot.com"
+from keyutils import GetKeyOrDie
+IFFT_URL = "https://maker.ifttt.com/trigger/tempi/with/key/{}".format(GetKeyOrDie())
 
-_LOGGER = None
+class TempiApp():
+    def __init__(self):
+        self.stdin_path = '/dev/null'
+        self.stdout_path = 'log.txt'
+        self.stderr_path = 'log.txt'
+        self.pidfile_path =  '/tmp/foo.pid'
+        self.pidfile_timeout = 5
 
-parser = OptionParser()
-parser.add_option("-d", "--daemonize", dest="daemonize", action="store_true",
-                  help="Daemonize TemPi (default True) or run in foreground")
+    def run(self):
+        while True:
+            (humidity, temperature) = dht11.read_sensor_data()
 
-parser.add_option("-s", "--sleep_seconds", default=10, dest="sleep_seconds",
-                  help="Sleep for this number of seconds")
-
-parser.add_option("-f", "--log_file", default="/var/log/tempi.log", dest="log_file",
-                  help="Logfile for application to use. Defaults to /var/log/tempi.log")
-
-
-def get_current_temperature():
-    """
-    :rtype : float
-    :return: current temperature from the sensor.
-    """
-    humidity, temperature = dht11.read_sensor_data()
-
-    _LOGGER.info("Humidity: %f, Temperature: %f", humidity, temperature)
-
-    return temperature
-
-def report_temperature(temperature, base_host):
-    url = "http://" + base_host + "/submit?temp=" + str(temperature)
-    _LOGGER.info("Opening %s", url)
-    u = u2.urlopen(url)
-
-    _LOGGER.info("Code: %d, text: %s", u.code, u.read())
+            r = requests.post(IFFT_URL, data=None, json={
+                'value1': temperature,
+                'value2': humidity
+            })
 
 
-def configure_logger(options):
-    global _LOGGER
-    my_logger = logging.getLogger('tempi')
-    my_logger.setLevel(logging.DEBUG)
+            time.sleep(5)
+        # time.sleep(60 * 60 * 30) # wake up every 30 minutes
 
-
-    handler = logging.handlers.RotatingFileHandler(options.log_file,
-                                                   maxBytes=20 * 1024 * 1024,
-                                                   backupCount=5)
-    handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-
-    my_logger.addHandler(handler)
-    _LOGGER = my_logger
-
-def run():
-    global _LOGGER
-
-    (options, args) = parser.parse_args()
-    configure_logger(options)
-
-    while True:
-        report_temperature(get_current_temperature(), BASE_HOST)
-        time.sleep(float(options.sleep_seconds))
-
-
-def main():
-    (options, args) = parser.parse_args()
-
-    print options
-    if not options.daemonize:
-        logging.info("Running in foreground")
-        run()
-    else:
-        daemon = Daemonize(app="TemPi", pid=PID, action=run)
-        daemon.start()
-
-
-if __name__ == '__main__':
-    main()
+app = TempiApp()
+daemon_runner = runner.DaemonRunner(app)
+daemon_runner.do_action()
